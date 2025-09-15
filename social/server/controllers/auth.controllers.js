@@ -1,4 +1,5 @@
 import User from '../models/user.model.js'
+import bcrypt from 'bcryptjs'
 
 export const signUp = async (req, res) => {
     const { name, username, email, password } = req.body;
@@ -22,10 +23,34 @@ export const signUp = async (req, res) => {
         if (password.length < 6) {
             return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = bcrypt.hash(password, salt);
 
-        const newUser = await User.create({ name, email, username, password });
+        const newUser = await User.create({ name, email, username, hashedPassword });
         res.status(201).json({ message: "User created successfully" });
     } catch {
         res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const signIn = async (req, res) => {
+    const { username, password } = req.body;
+    // username and password
+    // need to verify if user exists or not
+    try {
+        if (!username || !password) {
+            return res.status(400).json({ message: "All fields are required! "});
+        }
+
+        const user = await User.findOne({ username });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        res.status(200).json({ message: "User logged in successfully" });
+    } catch {
+        res.status(500).json({ message: "Internal server error" });
     }
 }
