@@ -3,4 +3,4 @@ import isAuth from '../middleware/isAuth.js';
 
 const userRouter = express.Router();
 
-userRouter.get('/current', isAuth, GetToApp);
+userRouter.get('/current', isAuth);
