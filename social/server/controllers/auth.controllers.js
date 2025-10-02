@@ -37,7 +37,7 @@ export const signUp = async (req, res) => {
             maxAge: 2592000000 // 30 * 24 * 60 * 60 * 1000
         });
 
-        res.status(201).json({ message: "User created successfully" });
+        res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ message: "Internal server error idhar", error: error });
     }
@@ -63,7 +63,16 @@ export const signIn = async (req, res) => {
         if (!passwordMatch) {
             return res.status(400).json({ message: "Wrong password" });
         }
-        res.status(200).json({ message: "User logged in successfully" });
+
+        const token = await genToken(user._id);
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            sameSite: true,
+            maxAge: 2592000000 // 30 days
+        });
+
+        res.status(200).json(user);
     } catch {
         res.status(500).json({ message: "Internal server error" });
     }

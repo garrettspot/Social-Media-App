@@ -1,6 +1,6 @@
-import User from "../models/user.model"
+import User from "../models/user.model.js"
 
-export const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res) => {
     const userId = req.userId;
     
     try {
@@ -15,3 +15,5 @@ export const getCurrentUser = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
+
+export default getCurrentUser
